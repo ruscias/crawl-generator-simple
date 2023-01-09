@@ -44,7 +44,7 @@ input[type="text"] {
   width: 480px;
 }
 
-input[type="button"] {
+button {
   height: 40px;
   width: 320px;
   margin-top: 16px;
