@@ -9,6 +9,41 @@
   <title>Generate A Crawling Script</title>
 </head>
 <body>
-  TODO
+  <div class="inputs">
+    <form class="inputs" action="." method="GET">
+      <div class="main-form">
+        <div class="left-form">
+          <label for="id-to-read-from">ID of Sheet To Read From</label>
+          <input type="text" name="id-to-read-from" id="id-to-read-from">
+          <label for="sheet-name-to-read-from">Name of Sheet To Read From</label>
+          <input type="text" name="sheet-name-to-read-from" id="sheet-name-to-read-from">
+          <label for="id-to-write-to">ID of Sheet To Write To</label>
+          <input type="text" name="id-to-write-to" id="id-to-write-to">
+          <label for="sheet-name-to-write-to">Name of Sheet To Write To</label>
+          <input type="text" name="sheet-name-to-write-to" id="sheet-name-to-write-to">
+          <label for="sleep-interval">Sleep Interval In Seconds</label>
+          <input type="text" name="sleep-interval" id="sleep-interval">
+        </div>
+        <div class="right-form">
+          <label for="user-attr">Attribute Name</label>
+          <input type="text" name="user-attr" id="user-attr">
+          <label for="user-attr-value">Attribute Value</label>
+          <input type="text" name="user-attr-value" id="user-attr-value">
+          <label for="user-tag">Tag</label>
+          <input type="text" name="user-tag" id="user-tag">
+          <label for="user-words">Words</label>
+          <input type="text" name="user-words" id="user-words">
+        </div>
+      </div>
+      <input type="button" id="generate-script-button" value="Generate Script">
+    </form>
+  </div>
+  <div class="results">
+    <pre>
+      <code tabindex="0">
+        <p id="results-area"></p>
+      </code>
+    </pre>
+  </div>
 </body>
 </html>

@@ -1,1 +1,127 @@
-console.log(`hello world!`);
+const indent = `\u00A0\u00A0`;
+
+const sorry = `/*
+USER DEFINED CONSTANTS
+*/
+
+// declare id of spreadsheet to read urls from
+const id_to_read_from = '1o2LxpMHsJXYw7q7PwfAgNLV5VmpAigA4nQsQi_Y9eiI';
+// declare name of sheet with urls
+const sheet_name_to_read_from = 'google';
+
+// declare id of spreadsheet to write results to
+const id_to_write_to = '1TshTIUC5QW148rCdEWvcVtFMWv5tqcH2uXVBk_aahs8';
+// declare name of sheet with data
+const sheet_name_to_write_to = 'data';
+
+// declare sleep interval
+// recommend less that 1 to start, ex: 0.2 or 1/5 of a second
+const sleep_interval_in_seconds = 0.2;
+// an html tag that contains standard soft 404 messaging
+const tag = 'h1';
+// an identifying attribute of the tag
+const attr = 'class';
+// the value of the identifying attribute
+const attr_value = '*';
+// words that might be on the page if there is a soft 404
+const words = 
+[
+${indent}'expired',
+${indent}'sorry',
+${indent}'apologies',
+${indent}'yahoo',
+${indent}'excel'
+];
+
+/*
+ADDITIONAL CONSTANTS
+*/
+
+// get the spreadsheet
+const spreadsheet_to_read_from = SpreadsheetApp.openById(id_to_read_from);
+// get the sheet with the urls
+const sheet_to_read_from = spreadsheet_to_read_from.getSheetByName(sheet_name_to_read_from);
+const rows_to_read_from = sheet_to_read_from.getDataRange().getValues().slice(1);
+
+// get the spreadsheet
+const spreadsheet_to_write_to = SpreadsheetApp.openById(id_to_write_to);
+// get the sheet with the urls
+const sheet_to_write_to = spreadsheet_to_write_to.getSheetByName(sheet_name_to_write_to);
+const rows_to_write_to = [
+${indent}['urls', 'status_codes', 'possible_soft_404', 'time_crawled']
+];
+
+const timestamp = Utilities.formatDate(new Date(), 'GMT', 'MM-dd-yyyy HH:mm:ss');
+
+/*
+HELPER FUNCTIONS
+*/
+
+function getElementsByID(tag, content, attr, attr_value) {
+${indent}const pattern = new RegExp(\`(<\${tag}[^<]*\${attr}=['"]\${attr_value}['"].*\/\${tag}>)\`);
+${indent}const result = pattern.exec(content);
+${indent}//debug console.log(\`\${result}\`);
+${indent}return result;
+}
+
+function isIndicatorWordFound(parsed_response, words) {
+${indent}for (const element of parsed_response) {
+${indent}${indent}for (const word of words) {
+${indent}${indent}${indent}if (element.toLowerCase().includes(word.toLowerCase())) {
+${indent}${indent}${indent}${indent}return true;
+${indent}${indent}${indent}} 
+${indent}${indent}}
+${indent}}
+${indent}return false;
+}
+
+function isSoft404(response, words, tag, attr, attr_value) {
+${indent}const content = response.getContentText();
+${indent}parsed_response = getElementsByID(tag, content, attr, attr_value);
+${indent}if (parsed_response) {
+${indent}${indent}return isIndicatorWordFound(parsed_response, words);
+${indent}} else {
+${indent}${indent}return false;
+${indent}}
+}
+
+function crawlUrl(url, words, tag, attr, attr_value) {
+${indent}const response = UrlFetchApp.fetch(url, {'muteHttpExceptions': true});
+${indent}const status_code = response.getResponseCode();
+${indent}const is_200_code = status_code === 200? true: false;
+${indent}const is_soft_404 = is_200_code ? isSoft404(response, words, tag, attr, attr_value): false; 
+${indent}return [url, status_code, is_soft_404];
+} 
+
+function main() {
+${indent}// crawl each url and update status_code in rows array
+${indent}for (const row of rows_to_read_from) {
+${indent}${indent}new_row = crawlUrl(row[0], words, tag, attr, attr_value);
+${indent}${indent}Utilities.sleep(sleep_interval_in_seconds * 1000);
+${indent}${indent}rows_to_write_to.push([new_row[0], new_row[1], new_row[2], timestamp]);
+${indent}${indent}console.log('...');
+${indent}}
+
+${indent}// remove existing rows
+${indent}sheet_to_write_to.clear();
+
+${indent}console.log('Adding rows...');
+
+${indent}// append rows to spreadsheet 
+${indent}for (const row of rows_to_write_to) {
+${indent}${indent}sheet_to_write_to.appendRow(row);
+${indent}${indent}console.log('...')
+${indent}}
+}`;
+
+const generate_script_button = document.querySelector('input#generate-script-button');
+const results_area = document.querySelector('p#results-area');
+console.log(results_area);
+
+
+generate_script_button.addEventListener('click', generateScript);
+
+function generateScript() {
+  results_area.innerText = sorry;
+}
+
